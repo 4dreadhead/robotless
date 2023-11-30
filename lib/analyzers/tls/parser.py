@@ -78,6 +78,9 @@ class TlsParser:
 
             taken_size += 4 + extension_length
 
+            if extension_type == 51:
+                continue
+
             extensions.append({
                 "value": extension_type,
                 "length": extension_length,
@@ -148,8 +151,7 @@ class TlsParser:
                     taken_size += 1
                 case _:
                     element, ext_raw = ext_raw.take(2)
-                    if ext_type != 41:
-                        ext_list.append(element)
+                    ext_list.append(element)
 
                     taken_size += 2
 
