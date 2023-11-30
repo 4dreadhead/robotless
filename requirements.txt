@@ -1,0 +1,6 @@
+httpagentparser
+fastapi
+mitmproxy
+python-dotenv
+peewee
+honcho
