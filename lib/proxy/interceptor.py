@@ -14,11 +14,12 @@ load_dotenv()
 class Mitmproxy:
     def __init__(self):
         self.proxy_destination_port = int(os.getenv("API_PORT"))
+        self.proxy_destination_host = os.getenv("API_HOST")
         self.tls_client = {}
 
     def request(self, flow: http.HTTPFlow):
         flow.request.scheme = "https"
-        flow.request.host = "127.0.0.1"
+        flow.request.host = self.proxy_destination_host
         flow.request.port = self.proxy_destination_port
 
         flow.request.headers["tls"] = self.tls_client.get(flow.client_conn.peername, "{}")
@@ -30,12 +31,6 @@ class Mitmproxy:
             result = '{"error": "%s"}' % error
 
         self.tls_client[data.context.client.peername] = result
-
-    def response(self, flow: http.HTTPFlow):
-        try:
-            del self.tls_client[flow.client_conn.peername]
-        except KeyError:
-            pass
 
 
 addons = [Mitmproxy()]

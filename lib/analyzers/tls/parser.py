@@ -148,7 +148,8 @@ class TlsParser:
                     taken_size += 1
                 case _:
                     element, ext_raw = ext_raw.take(2)
-                    ext_list.append(element)
+                    if ext_type != 41:
+                        ext_list.append(element)
 
                     taken_size += 2
 
