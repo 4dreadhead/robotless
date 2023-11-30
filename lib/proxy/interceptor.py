@@ -25,8 +25,12 @@ class Mitmproxy:
         flow.request.scheme = "https"
         flow.request.host = self.proxy_destination_host
         flow.request.port = self.proxy_destination_port
-
+        flow.request.headers["Connection"] = "close"
         flow.request.headers["tls"] = self.tls_client.get(flow.client_conn.peername, "{}")
+
+    def response(self, flow: http.HTTPFlow):
+        flow.response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        flow.response.headers["Pragma"] = "no-cache"
 
     def tls_clienthello(self, data: tls.ClientHelloData):
         current_time = time.time()
