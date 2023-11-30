@@ -1,9 +1,11 @@
 import hashlib
+import time
 import json
 from lib.models import BytesToInteger
 
 
 class TlsParser:
+    TIMESTAMP_KEY = "timestamp"
     GREASE_TABLE = {
         0x0a0a: True, 0x1a1a: True, 0x2a2a: True, 0x3a3a: True,
         0x4a4a: True, 0x5a5a: True, 0x6a6a: True, 0x7a7a: True,
@@ -31,7 +33,8 @@ class TlsParser:
             "ja3_hash": hashlib.md5(ja3.encode()).hexdigest(),
             "ja3_text": ja3,
             "ja3n_hash": hashlib.md5(ja3_normalized.encode()).hexdigest(),
-            "ja3n_text": ja3_normalized
+            "ja3n_text": ja3_normalized,
+            self.TIMESTAMP_KEY: int(time.time())
         }
 
         return self
@@ -77,9 +80,6 @@ class TlsParser:
             ext_data = self.parse_extension(extension_type, extension_length, extension_content_raw)
 
             taken_size += 4 + extension_length
-
-            if extension_type == 41:
-                continue
 
             extensions.append({
                 "value": extension_type,
