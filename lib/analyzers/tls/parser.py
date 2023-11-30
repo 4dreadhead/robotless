@@ -78,7 +78,7 @@ class TlsParser:
 
             taken_size += 4 + extension_length
 
-            if extension_type == 51:
+            if extension_type == 41:
                 continue
 
             extensions.append({
