@@ -44,12 +44,8 @@ class HtmlPages:
         self.register_handlers()
 
     def register_handlers(self):
-        self.app.get("/", response_class=HTMLResponse)(self.read_root)
         self.app.get("/analyze", response_class=HTMLResponse)(self.read_analyze)
         self.app.get("/share", response_class=HTMLResponse)(self.read_share)
-
-    async def read_root(self, request: Request):
-        return self.templates.TemplateResponse("index.html", {"request": request})
 
     async def read_analyze(self, request: Request):
         tls = json.loads(request.headers.get("tls", "{}"))

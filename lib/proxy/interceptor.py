@@ -18,6 +18,7 @@ class Mitmproxy:
 
     def request(self, flow: http.HTTPFlow):
         flow.request.scheme = "https"
+        flow.request.host = "127.0.0.1"
         flow.request.port = self.proxy_destination_port
 
         flow.request.headers["tls"] = self.tls_client.get(flow.client_conn.peername, "{}")
