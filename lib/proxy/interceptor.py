@@ -29,15 +29,19 @@ class Mitmproxy:
         flow.request.headers["tls"] = self.tls_client.get(flow.client_conn.peername, "{}")
 
     def tls_clienthello(self, data: tls.ClientHelloData):
-        if time.time() - self.last_clean_time > self.clean_timeout:
-            self.last_clean_time = time.time()
+        current_time = time.time()
+        if current_time - self.last_clean_time > self.clean_timeout:
+            self.last_clean_time = current_time
+            to_delete = []
 
             for key, value in self.tls_client.items():
                 fp = json.loads(value)
                 if time.time() - fp[TlsParser.TIMESTAMP_KEY] > self.clean_timeout:
-                    del self.tls_client[key]
-        print(data.client_hello.extensions)
-        print(data.client_hello.raw_bytes())
+                    to_delete.append(key)
+
+            for key in to_delete:
+                del self.tls_client[key]
+
         if not self.tls_client.get(data.context.client.peername):
             self.tls_client[data.context.client.peername] = TlsParser(data.client_hello.raw_bytes()).as_str()
 
