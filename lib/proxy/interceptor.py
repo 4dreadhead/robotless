@@ -36,7 +36,7 @@ class Mitmproxy:
                 fp = json.loads(value)
                 if time.time() - fp[TlsParser.TIMESTAMP_KEY] > self.clean_timeout:
                     del self.tls_client[key]
-
+        print(data.client_hello.extensions)
         print(data.client_hello.raw_bytes())
         if not self.tls_client.get(data.context.client.peername):
             self.tls_client[data.context.client.peername] = TlsParser(data.client_hello.raw_bytes()).as_str()
