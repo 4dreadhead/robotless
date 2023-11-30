@@ -1,6 +1,7 @@
 # Inheritance only
 
 class BaseApi:
+    API_VERSION = "v1"
     SUPPORTED_METHODS = [
         "GET",
         "POST",
@@ -12,7 +13,7 @@ class BaseApi:
 
     def __init__(self, app):
         self.app = app
-        self.prefix = "/" + self.__class__.__name__.lower()
+        self.prefix = "/" + self.API_VERSION + "/" + self.__class__.__name__.lower()
 
         if self.prefix == "base":
             raise ValueError("This class can be only inherited.")

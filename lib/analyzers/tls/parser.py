@@ -26,15 +26,13 @@ class TlsParser:
         parsed_client_hello = self.parse_client_hello()
 
         ja3, ja3_normalized = self.collect_ja3(parsed_client_hello)
-        # akamai_hash, akamai_string = self.collect_akamai(parsed_client_hello)
 
         self.cached = {
-            # "original_byres": " ".join(map(str, self.bytes_raw_original)),
             "ja3_hash": hashlib.md5(ja3.encode()).hexdigest(),
-            "ja3_string": ja3,
+            "ja3_text": ja3,
             "ja3n_hash": hashlib.md5(ja3_normalized.encode()).hexdigest(),
-            "ja3n_string": ja3_normalized
-        }  # | parsed_client_hello
+            "ja3n_text": ja3_normalized
+        }
 
         return self
 
@@ -186,6 +184,3 @@ class TlsParser:
     @staticmethod
     def generate_ja3_string(fingerprint):
         return ",".join("-".join(map(str, obj)) for obj in fingerprint)
-
-    def collect_akamai(self, client_hello):
-        pass

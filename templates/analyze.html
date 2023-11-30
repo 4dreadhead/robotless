@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse result</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #695E93;
+            color: #eee;
+        }
+
+        .header {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            background-color: #281C2D;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header a {
+            color: #eee;
+            text-decoration: none;
+            margin-left: 10px;
+            padding: 10px 15px;
+            border-radius: 5px;
+            background-color: transparent;
+            font-size: 18px;
+        }
+
+        .header a:hover,
+        .header a.current-page {
+            background-color: #555;
+        }
+
+        .header span {
+            color: #eee;
+            margin-right: auto;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .result {
+            background-color: #392741;
+            border: 1px solid #695E93;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .value {
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            position: relative;
+            background-color: #281C2D;
+            border: 1px solid #34495e;
+        }
+
+        .label {
+            font-weight: bold;
+            margin-right: 5px;
+            color: #ccc;
+        }
+
+        .kind-indicator {
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .kind-browser {
+            background-color: #2ecc71;
+        }
+
+        .kind-http_client {
+            background-color: #f39c12;
+        }
+
+        .kind-malware {
+            background-color: #e74c3c;
+        }
+
+        .possible-tools {
+            margin-left: 20px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .possible-tools li {
+            list-style-type: none;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .possible-tools .kind-indicator {
+            position: absolute;
+            top: 50%;
+            left: -20px;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <span>Analyze fingerprint</span>
+        <a href="/share">Share</a>
+        <a href="/analyze" class="current-page">Analyze</a>
+    </div>
+
+    <div class="result" id="result-container"></div>
+
+    <script>
+        const jsonResponse = JSON.parse({{ jsonResponse | tojson | safe }});
+
+        function displayResult() {
+            const resultContainer = document.getElementById("result-container");
+
+            function createResultElement(label, value, kind) {
+                const element = document.createElement("div");
+                if (kind) { element.className = `value kind-${kind}`; } else { element.className = "value"; }
+                element.innerHTML = `<div class="kind-indicator kind-${kind}"></div><span class="label">${label}</span> ${value}`;
+                return element;
+            }
+
+            function createPossibleToolsContainer(label, kind) {
+                const container = createResultElement(label, "", kind);
+                const toolsList = document.createElement("ul");
+                toolsList.className = "possible-tools";
+
+                jsonResponse.tools.forEach(tool => {
+                    const toolItem = document.createElement("li");
+                    toolItem.innerHTML = `<div class="kind-indicator kind-${tool.kind.toLowerCase()}"></div>${tool.tool}`;
+                    toolsList.appendChild(toolItem);
+                });
+
+                container.appendChild(toolsList);
+                return container;
+            }
+
+            resultContainer.appendChild(createResultElement("JA3-hash:", jsonResponse.ja3_hash, ""));
+            resultContainer.appendChild(createResultElement("JA3-text:", jsonResponse.ja3_text, ""));
+            resultContainer.appendChild(createResultElement("User-Agent:", jsonResponse.user_agent, ""));
+
+            if (jsonResponse.tools && jsonResponse.tools.length > 0) {
+                resultContainer.appendChild(createPossibleToolsContainer("Possible Tools:", "")); } else {
+                resultContainer.appendChild(createResultElement("This tool is not known yet :(", "", ""));
+            }
+        }
+
+        window.onload = displayResult;
+    </script>
+
+</body>
+
+</html>
