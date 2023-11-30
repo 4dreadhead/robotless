@@ -25,6 +25,7 @@ class Mitmproxy:
         flow.request.headers["tls"] = self.tls_client.get(flow.client_conn.peername, "{}")
 
     def tls_clienthello(self, data: tls.ClientHelloData):
+        print(data.client_hello.raw_bytes())
         try:
             result = TlsParser(data.client_hello.raw_bytes()).as_str()
         except Exception as error:
