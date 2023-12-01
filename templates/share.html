@@ -114,6 +114,28 @@
             border-radius: 50%;
             margin-right: 10px;
         }
+
+         #refresh {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            margin: 10px 20px;
+            float: right;
+            font-weight: bold;
+            font-size: 18px;
+            text-align: center;
+            background-color: #281C2D;
+            color: #ccc;
+            border: 1px solid #695E93;
+            padding: 20px 30px 16px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            top: 50px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        #refresh:hover {
+            background-color: #392741;
+        }
     </style>
 </head>
 
@@ -126,12 +148,19 @@
     </div>
 
     <div class="result" id="result-container"></div>
+    <button type="button" id="refresh" onclick="refreshResult()">Refresh result</button>
 
     <script>
-        const jsonResponse = JSON.parse({{ jsonResponse | tojson | safe }});
+        function createResultElement(label, value, kind) {
+            const element = document.createElement("div");
+            if (kind) { element.className = `value kind-${kind}`; } else { element.className = "value"; }
+            element.innerHTML = `<div class="kind-indicator kind-${kind}"></div><span class="label">${label}:</span> ${value}`;
+            return element;
+        }
 
-        function displayResult() {
+        async function setResult() {
             const resultContainer = document.getElementById("result-container");
+            let jsonResponse = await fetchResult();
 
             for (const key in jsonResponse) {
                 if (key === "code") { continue; }
@@ -143,14 +172,27 @@
             }
         }
 
-        function createResultElement(label, value, kind) {
-            const element = document.createElement("div");
-            if (kind) { element.className = `value kind-${kind}`; } else { element.className = "value"; }
-            element.innerHTML = `<div class="kind-indicator kind-${kind}"></div><span class="label">${label}:</span> ${value}`;
-            return element;
+        async function refreshResult() {
+            let container = document.getElementById("result-container");
+            container.innerHTML = "";
+            await setResult()
         }
 
-        window.onload = displayResult;
+        async function fetchResult() {
+            try {
+                let response = await fetch('/v1/share/all',{
+                    headers: {
+                        'Connection': 'close',
+                        'Cache-Control': 'no-cache',
+                    }
+                });
+                return await response.json();
+            } catch (error) {
+                return {"error": error.toString()};
+            }
+        }
+
+        window.onload = setResult;
     </script>
 
 </body>

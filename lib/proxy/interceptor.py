@@ -26,7 +26,7 @@ class Mitmproxy:
         flow.request.host = self.proxy_destination_host
         flow.request.port = self.proxy_destination_port
         flow.request.headers["Connection"] = "close"
-        flow.request.headers["tls"] = self.tls_client.get(flow.client_conn.peername, "{}")
+        flow.request.headers["x-tls"] = self.tls_client.get(flow.client_conn.peername, "{}")
 
     def response(self, flow: http.HTTPFlow):
         flow.response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
