@@ -16,59 +16,68 @@
 
         .header {
             display: flex;
-            justify-content: flex-end;
+            flex-direction: row;
             align-items: center;
             background-color: #281C2D;
-            padding: 15px; /* увеличенный размер шапки */
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
-
         .header a {
             color: #eee;
             text-decoration: none;
             margin-left: 10px;
-            padding: 10px 15px; /* увеличенный размер ссылок */
-            border-radius: 5px;
+            padding: 10px 15px;
+            border-radius: 16px;
+            border-color: #695E93;
             background-color: transparent;
-            font-size: 18px; /* увеличенный размер шрифта ссылок */
+            font-size: 18px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
-
         .header a:hover,
         .header a.current-page {
-            background-color: #555;
+            background-color: #695E93;
+            border-color: #695E93;
         }
-
+        .header a:active {
+            background-color: #281C2D;
+            border-color: #281C2D;
+        }
         .header span {
-            color: #eee;
+            padding: 15px;
             margin-right: auto;
-            font-size: 24px; /* увеличенный размер шрифта заголовка */
+            color: #eee;
+            font-size: 24px;
             font-weight: bold;
         }
-
+        .header-links {
+            padding: 33px 10px;
+            background-color: #392741;
+            min-width: 200px;
+        }
         .result {
             background-color: #392741;
             border: 1px solid #695E93;
-            border-radius: 8px;
+            border-radius: 16px;
             padding: 20px;
             margin: 20px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
-
+        .scrollable {
+            overflow: auto;
+        }
         .value {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 16px;
             position: relative;
             background-color: #281C2D;
-            border: 1px solid #34495e;
+            border: 1px solid #281C2D;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
-
         .label {
             font-weight: bold;
             margin-right: 5px;
             color: #ccc;
         }
-
         .kind-indicator {
             position: absolute;
             top: 50%;
@@ -79,31 +88,25 @@
             border-radius: 50%;
             margin-right: 10px;
         }
-
         .kind-browser {
             background-color: #2ecc71;
         }
-
         .kind-http_client {
             background-color: #f39c12;
         }
-
         .kind-malware {
             background-color: #e74c3c;
         }
-
         .possible-tools {
             margin-left: 20px;
             padding: 10px;
-            border-radius: 8px;
+            border-radius: 16px;
         }
-
         .possible-tools li {
             list-style-type: none;
             margin-bottom: 10px;
             position: relative;
         }
-
         .possible-tools .kind-indicator {
             position: absolute;
             top: 50%;
@@ -114,8 +117,7 @@
             border-radius: 50%;
             margin-right: 10px;
         }
-
-         #refresh {
+        #refresh {
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
             margin: 10px 20px;
             float: right;
@@ -126,13 +128,12 @@
             color: #ccc;
             border: 1px solid #695E93;
             padding: 20px 30px 16px 30px;
-            border-radius: 5px;
+            border-radius: 16px;
             cursor: pointer;
             top: 50px;
             right: 20px;
             z-index: 1000;
         }
-
         #refresh:hover {
             background-color: #392741;
         }
@@ -143,18 +144,20 @@
 
     <div class="header">
         <span>Collect fingerprint</span>
-        <a href="/share" class="current-page">Share</a>
-        <a href="/analyze">Analyze</a>
+        <div class="header-links">
+            <a href="/share" class="current-page">Share</a>
+            <a href="/analyze">Analyze</a>
+        </div>
     </div>
 
     <div class="result" id="result-container"></div>
     <button type="button" id="refresh" onclick="refreshResult()">Refresh result</button>
 
     <script>
-        function createResultElement(label, value, kind) {
+        function createResultElement(label, value) {
             const element = document.createElement("div");
-            if (kind) { element.className = `value kind-${kind}`; } else { element.className = "value"; }
-            element.innerHTML = `<div class="kind-indicator kind-${kind}"></div><span class="label">${label}:</span> ${value}`;
+            element.className = "value"
+            element.innerHTML = `<div class="kind-indicator"></div><span class="label">${label}:</span> ${value}`;
             return element;
         }
 
@@ -164,11 +167,9 @@
 
             for (const key in jsonResponse) {
                 if (key === "code") { continue; }
-                if (jsonResponse.hasOwnProperty(key)) {
-                    const value = jsonResponse[key];
-                    const element = createResultElement(key, value, "");
-                    resultContainer.appendChild(element);
-                }
+                const value = jsonResponse[key];
+                const element = createResultElement(key, value);
+                resultContainer.appendChild(element);
             }
         }
 

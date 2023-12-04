@@ -17,7 +17,7 @@ class Mitmproxy:
         flow.request.host = self.proxy_destination_host
         flow.request.port = self.proxy_destination_port
         flow.request.headers["Connection"] = "close"
-        flow.request.headers["X-Client-Hello"] = self.tls_of_clients.get(flow.client_conn.peername, "{}")
+        flow.request.headers["X-Client-Hello"] = self.tls_of_clients.get(flow.client_conn.peername, "")
 
     def tls_clienthello(self, data: tls.ClientHelloData):
         key = data.context.client.peername
