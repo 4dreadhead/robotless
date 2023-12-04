@@ -7,10 +7,11 @@ from lib.models import EnumExtended
 class Fingerprint(Base):
     class Kind(EnumExtended):
         JA3 = 1
-        AKAMAI = 2
-        FINGERPRINTJS = 3
-        CANVAS = 4
-        WEBGL = 5
+        JA3N = 2
+        AKAMAI = 3
+        FINGERPRINTJS = 4
+        CANVAS = 5
+        WEBGL = 6
 
     id = PrimaryKeyField()
     hash = CharField(unique=True, max_length=64)

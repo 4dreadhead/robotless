@@ -151,8 +151,6 @@
     <button type="button" id="refresh" onclick="refreshResult()">Refresh result</button>
 
     <script>
-        const baseUrl = '{{ base_url }}'
-
         function createResultElement(label, value, kind) {
             const element = document.createElement("div");
             if (kind) { element.className = `value kind-${kind}`; } else { element.className = "value"; }
@@ -181,11 +179,14 @@
 
             resultContainer.appendChild(createResultElement("JA3-hash:", jsonResponse.ja3_hash, ""));
             resultContainer.appendChild(createResultElement("JA3-text:", jsonResponse.ja3_text, ""));
+            resultContainer.appendChild(createResultElement("JA3N-hash:", jsonResponse.ja3n_hash, ""));
+            resultContainer.appendChild(createResultElement("JA3N-text:", jsonResponse.ja3n_text, ""));
             resultContainer.appendChild(createResultElement("User-Agent:", jsonResponse.user_agent, ""));
 
             if (jsonResponse.tools && jsonResponse.tools.length > 0) {
-                resultContainer.appendChild(createPossibleToolsContainer(jsonResponse, "Possible Tools:", "")); } else {
-                resultContainer.appendChild(createResultElement("This tool is not known yet :(", "", ""));
+                resultContainer.appendChild(createPossibleToolsContainer(jsonResponse, "Possible Tools:", "")); }
+            else {
+                resultContainer.appendChild(createResultElement("This tool is not known yet.", "", ""));
             }
         }
 
@@ -197,7 +198,7 @@
 
         async function fetchResult() {
             try {
-                let response = await fetch(baseUrl + '/v1/analyze/all',{
+                let response = await fetch('/v1/analyze/all',{
                     headers: {
                         'Connection': 'close',
                         'Cache-Control': 'no-cache',

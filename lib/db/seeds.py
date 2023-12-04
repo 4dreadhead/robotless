@@ -21,11 +21,18 @@ def run(results_path='/tmp/results'):
     results = parse_results_directory(results_path)
 
     for res in results:
-        fp, fp_created = Fingerprint.get_or_create(
+        fp, _ = Fingerprint.get_or_create(
             hash=res["fp"]["ja3_hash"],
+            kind=Fingerprint.Kind.JA3.value,
             defaults={
-                "kind": Fingerprint.Kind.JA3.value,
                 "value": res["fp"]["ja3_text"]
+            }
+        )
+        fpn, _ = Fingerprint.get_or_create(
+            hash=res["fp"]["ja3n_hash"],
+            kind=Fingerprint.Kind.JA3N.value,
+            defaults={
+                "value": res["fp"]["ja3n_text"]
             }
         )
         parsed_tool = Tool.create(
@@ -36,7 +43,7 @@ def run(results_path='/tmp/results'):
             kind=Tool.Kind.HTTP_CLIENT.value
         )
         parsed_tool.fingerprints.add(fp)
-
+        parsed_tool.fingerprints.add(fpn)
 
 
 def json_from_file(file_path):

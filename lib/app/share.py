@@ -1,11 +1,13 @@
 import json
 import re
+import base64
 from fastapi import Request
 from fastapi.responses import JSONResponse
 import httpagentparser
 from lib.app import BaseApi
 from lib.db.tables import *
 from lib.models import EnumExtended
+from lib.analyzers.tls import TlsParser
 
 
 class Share(BaseApi):
@@ -25,18 +27,31 @@ class Share(BaseApi):
         if not (pf_name in self.PLATFORMS and name in self.BROWSERS):
             return self.share_response({"User-Agent": ua_row}, self.Code.CANT_RECOGNIZE)
 
-        tls = json.loads(request.headers.get("x-tls", "{}"))
-        ja3_hash = tls.get("ja3_hash")
-        ja3_text = tls.get("ja3_text")
-        kind = Tool.Kind.SEARCH_BOT.value if re.search(r'bot', name, re.I) else Tool.Kind.BROWSER.value
+        client_hello = request.headers.get("X-Client-Hello")
 
-        if not (ja3_hash and ja3_text):
+        if not client_hello:
             return self.share_response({"User-Agent": ua_row}, self.Code.CANT_COLLECT)
+
+        try:
+            ja3_full = TlsParser(base64.b64decode(client_hello)).as_json()
+        except ValueError:
+            return self.share_response({"User-Agent": ua_row}, self.Code.CANT_COLLECT)
+
+        if re.search(r'bot', name, re.I):
+            tool_kind = Tool.Kind.SEARCH_BOT.value
+            fp_kind = Fingerprint.Kind.JA3.value
+            ja3_hash = ja3_full["ja3_hash"]
+            ja3_text = ja3_full["ja3_text"]
+        else:
+            tool_kind = Tool.Kind.BROWSER.value
+            fp_kind = Fingerprint.Kind.JA3N.value
+            ja3_hash = ja3_full["ja3n_hash"]
+            ja3_text = ja3_full["ja3n_text"]
 
         fp, fp_created = Fingerprint.get_or_create(
             hash=ja3_hash,
+            kind=fp_kind,
             defaults={
-                "kind": Fingerprint.Kind.JA3.value,
                 "value": ja3_text
             }
         )
@@ -44,12 +59,13 @@ class Share(BaseApi):
             name=name,
             system=system,
             version=version,
-            kind=kind
+            kind=tool_kind
         )
         if tool_created or fp_created:
             parsed_tool.fingerprints.add(fp)
             return self.share_response(
                 {
+                    "JA3-type": fp.kind_attr.name,
                     "JA3-hash": fp.hash,
                     "JA3-text": fp.value,
                     "Tool": parsed_tool.as_str,
