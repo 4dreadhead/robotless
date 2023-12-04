@@ -14,7 +14,7 @@ class HtmlPages:
         if os.getenv("API_HOST") in ["localhost", "127.0.0.1", "0.0.0.0"]:
             self.base = ""
         elif os.getenv("API_SUBDOMAIN_ALIAS"):
-            self.base = "https://" + os.getenv("API_SUBDOMAIN_ALIAS") + os.getenv("API_HOST")
+            self.base = "https://" + os.getenv("API_SUBDOMAIN_ALIAS") + "." + os.getenv("API_HOST")
         else:
             self.base = "https://" + os.getenv("API_HOST")
 
