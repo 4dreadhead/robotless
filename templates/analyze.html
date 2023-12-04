@@ -151,6 +151,8 @@
     <button type="button" id="refresh" onclick="refreshResult()">Refresh result</button>
 
     <script>
+        const baseUrl = '{{ base_url }}'
+
         function createResultElement(label, value, kind) {
             const element = document.createElement("div");
             if (kind) { element.className = `value kind-${kind}`; } else { element.className = "value"; }
@@ -195,7 +197,7 @@
 
         async function fetchResult() {
             try {
-                let response = await fetch('/v1/analyze/all',{
+                let response = await fetch(baseUrl + '/v1/analyze/all',{
                     headers: {
                         'Connection': 'close',
                         'Cache-Control': 'no-cache',
