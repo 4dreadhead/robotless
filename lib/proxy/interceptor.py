@@ -4,6 +4,10 @@ import json
 import time
 from mitmproxy import http
 from mitmproxy import tls
+from mitmproxy.connection import ConnectionState
+from mitmproxy.proxy.server_hooks import ServerConnectionHookData
+from mitmproxy.proxy import events
+# from psutil import process_iter
 from dotenv import load_dotenv
 
 sys.path.append(os.getcwd())
@@ -29,6 +33,7 @@ class Mitmproxy:
         flow.request.headers["x-tls"] = self.tls_client.get(flow.client_conn.peername, "{}")
 
     def response(self, flow: http.HTTPFlow):
+        flow.request.headers["Connection"] = "close"
         flow.response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
         flow.response.headers["Pragma"] = "no-cache"
 
