@@ -63,7 +63,7 @@ class Share(BaseApi):
         )
         if fp not in parsed_tool.fingerprints:
             parsed_tool.fingerprints.add(fp)
-            self.share_response(
+            return self.share_response(
                 {
                     "JA3-type": fp.kind_attr.name,
                     "JA3-hash": fp.hash,
