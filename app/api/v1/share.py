@@ -1,13 +1,12 @@
-import json
 import re
 import base64
 from fastapi import Request
 from fastapi.responses import JSONResponse
 import httpagentparser
-from lib.app import BaseApi
-from lib.db.tables import *
-from lib.models import EnumExtended
-from lib.analyzers.tls import TlsParser
+from app.api import BaseApi
+from app.db.tables import *
+from app.customs import EnumExtended
+from app.lib.parsers.tls import TlsParser
 
 
 class Share(BaseApi):

@@ -1,7 +1,7 @@
 from datetime import datetime
 from peewee import IntegerField, CharField, PrimaryKeyField, DateTimeField
-from lib.db import Base
-from lib.models import EnumExtended
+from app.db import Base
+from app.customs import EnumExtended
 
 
 class Fingerprint(Base):

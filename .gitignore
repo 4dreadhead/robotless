@@ -1,5 +1,6 @@
-venv
-.env
-*.crt
-*.pem
-*.key
+/venv
+/.idea
+/.env
+/*.crt
+/*.pem
+/*.key

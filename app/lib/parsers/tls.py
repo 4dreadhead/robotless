@@ -1,10 +1,10 @@
 import hashlib
 import time
 import json
-from lib.models import BytesToInteger
+from app.customs import BytesToInteger
 
 
-class TlsParser:
+class TLSParser:
     TIMESTAMP_KEY = "timestamp"
     GREASE_TABLE = {
         0x0a0a: True, 0x1a1a: True, 0x2a2a: True, 0x3a3a: True,

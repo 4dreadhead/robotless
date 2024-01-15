@@ -2,7 +2,7 @@ import json
 import os
 from peewee import PostgresqlDatabase
 from dotenv import load_dotenv
-from lib.db.tables import *
+from app.db.tables import *
 
 load_dotenv()
 

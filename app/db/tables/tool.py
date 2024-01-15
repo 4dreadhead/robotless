@@ -1,8 +1,8 @@
 from datetime import datetime
 from peewee import CharField, PrimaryKeyField, IntegerField, ManyToManyField, DateTimeField
-from lib.models import EnumExtended
-from lib.db import Base
-from lib.db.tables import Fingerprint
+from app.customs import EnumExtended
+from app.db import Base
+from app.db.tables import Fingerprint
 
 
 class Tool(Base):

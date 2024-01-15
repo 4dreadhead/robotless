@@ -1,10 +1,9 @@
 import base64
 from fastapi import Request
 from fastapi.responses import JSONResponse
-from lib.app import BaseApi
-from lib.db.tables import Fingerprint
-from lib.analyzers.tls import TlsParser
-import json
+from app.api import BaseApi
+from app.db.tables import Fingerprint
+from app.lib.parsers.tls import TLSParser
 
 
 class Analyze(BaseApi):
@@ -16,7 +15,7 @@ class Analyze(BaseApi):
         "tools": []
     }
 
-    def init_api(self):
+    def init_api(self, app):
         self.add_route("/all", self.all, "get")
 
     async def all(self, request: Request):
@@ -27,7 +26,7 @@ class Analyze(BaseApi):
             return JSONResponse(response)
 
         try:
-            response = TlsParser(base64.b64decode(client_hello)).as_json()
+            response = TLSParser(base64.b64decode(client_hello)).as_json()
             fp = \
                 Fingerprint.get_or_none(hash=response["ja3_hash"], kind=Fingerprint.Kind.JA3.value) or \
                 Fingerprint.get_or_none(hash=response["ja3n_hash"], kind=Fingerprint.Kind.JA3N.value)
