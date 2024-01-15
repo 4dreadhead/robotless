@@ -158,14 +158,10 @@ class TLSParser:
         return ext_list
 
     def collect_ja3(self, client_hello):
-        version = client_hello.get("version") or client_hello.get("legacy_version")
-        ext_values = (ext["value"] for ext in client_hello["extensions"])
-        supported_groups_all = self.data_by_ext_value(10, client_hello["extensions"])
-        ec_curves_point_formats = self.data_by_ext_value(11, client_hello["extensions"])
-
         version = [client_hello.get("version") or client_hello.get("legacy_version")]
         cipher_suites = self.grease_filter(client_hello["cipher_suites"])
         extensions = self.grease_filter(ext["value"] for ext in client_hello["extensions"])
+        supported_groups_all = self.data_by_ext_value(10, client_hello["extensions"])
         supported_groups = self.grease_filter(supported_groups_all)
         ec_curves_point_formats = self.data_by_ext_value(11, client_hello["extensions"])
 
