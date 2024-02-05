@@ -1,7 +1,7 @@
 import hashlib
 import time
 import json
-from app.customs import BytesToInteger
+from src.utils.bytes_to_integer import BytesToInteger
 
 
 class TLSParser:
