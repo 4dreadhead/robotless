@@ -30,7 +30,7 @@ DEBUG = os.getenv("DEBUG_MODE")
 
 ALLOWED_HOSTS = [os.getenv("API_HOST")]
 
-CSRF_TRUSTED_ORIGINS = [f'https://#{os.getenv("API_HOST")}', 'https://*.127.0.0.1']
+CSRF_TRUSTED_ORIGINS = [f'https://*.{os.getenv("API_HOST")}', 'https://*.127.0.0.1']
 
 # Application definition
 
