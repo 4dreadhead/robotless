@@ -61,7 +61,7 @@ class APIShareView(APIView):
             parsed_tool.fingerprints.add(fp)
             return JsonResponse(
                 {
-                    "JA3-type": fp.kind.name,
+                    "JA3-type": Fingerprint.Kind(fp.kind).name,
                     "JA3-hash": fp.hash,
                     "JA3-text": fp.value,
                     "Tool": parsed_tool.as_str,
