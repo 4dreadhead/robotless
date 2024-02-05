@@ -13,7 +13,7 @@ class Mitmproxy:
         self.tls_of_clients = {}
 
     def request(self, flow: http.HTTPFlow):
-        flow.request.scheme = "https"
+        flow.request.scheme = os.getenv("HTTP_SCHEME")
         flow.request.host = self.proxy_destination_host
         flow.request.port = self.proxy_destination_port
         flow.request.headers["Connection"] = "close"

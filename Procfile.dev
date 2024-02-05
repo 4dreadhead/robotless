@@ -1,3 +1,3 @@
-proxy: mitmdump -s app/proxy.py --ssl-insecure --listen-port $PROXY_PORT --set tls_version_client_max=$TLS_VERSION_MAX --set tls_version_client_min=$TLS_VERSION_MIN --set http2=false --set http3=false
-app: python3 -m uvicorn main:app --host $API_HOST --port $API_PORT --ssl-keyfile $SSL_KEYFILE --ssl-certfile $SSL_CERTIFICATE
-database: docker-compose up
+proxy: mitmdump -s src/proxy.py --ssl-insecure --listen-port $PROXY_PORT --set tls_version_client_max=$TLS_VERSION_MAX --set tls_version_client_min=$TLS_VERSION_MIN --set http2=false --set http3=false
+server: python manage.py runserver
+# database: docker-compose up

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse result</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #695E93;
+            color: #eee;
+        }
+
+        .header {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            background-color: #281C2D;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .header a {
+            color: #eee;
+            text-decoration: none;
+            margin-left: 10px;
+            padding: 10px 15px;
+            border-radius: 16px;
+            background-color: transparent;
+            font-size: 18px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .header a:hover,
+        .header a.current-page {
+            background-color: #695E93;
+        }
+        .header a:active {
+            background-color: #281C2D;
+        }
+        .header span {
+            padding: 15px;
+            margin-right: auto;
+            color: #eee;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .header-links {
+            padding: 33px 10px;
+            background-color: #392741;
+            min-width: 200px;
+        }
+        .result {
+            background-color: #392741;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .scrollable {
+            overflow: auto;
+        }
+        .value {
+            margin-bottom: 10px;
+            padding: 20px;
+            border-radius: 16px;
+            position: relative;
+            background-color: #281C2D;
+            border: 3px solid #281C2D;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .label {
+            font-weight: bold;
+            margin-right: 5px;
+            color: #ccc;
+        }
+        .kind-indicator {
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .kind-browser {
+            background-color: #2ecc71;
+        }
+        .kind-http_client {
+            background-color: #f39c12;
+        }
+        .kind-malware {
+            background-color: #e74c3c;
+        }
+        .possible-tools {
+            margin-left: 20px;
+            padding: 10px;
+            border-radius: 16px;
+        }
+        .possible-tools li {
+            list-style-type: none;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        .possible-tools .kind-indicator {
+            position: absolute;
+            top: 50%;
+            left: -20px;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        #refresh {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            margin-right: 20px;
+            margin-bottom: 10px;
+            float: right;
+            font-weight: bold;
+            font-size: 18px;
+            text-align: center;
+            background-color: #392741;
+            border: 1px solid #392741;
+            color: #ccc;
+            padding: 20px 30px 16px 30px;
+            border-radius: 16px;
+            cursor: pointer;
+            right: 20px;
+            z-index: 1000;
+        }
+        #refresh:hover {
+            background-color: #281C2D;
+            border: 1px solid #281C2D;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <span>Analyze fingerprint</span>
+        <div class="header-links">
+            <a href="{% url 'share' %}">Share</a>
+            <a href="{% url 'analyze' %}" class="current-page">Analyze</a>
+        </div>
+    </div>
+
+    <div class="result" id="result-container"></div>
+    <button type="button" id="refresh" onclick="refreshResult()">Refresh result</button>
+
+    <script>
+        function createResultElement(label, value) {
+            const element = document.createElement("div");
+            element.className = "value scrollable";
+            element.innerHTML = `<span class="label">${label}</span> ${value}`;
+            return element;
+        }
+
+        function createPossibleToolsContainer(jsonResponse, label) {
+            const container = createResultElement(label, "");
+            const toolsList = document.createElement("ul");
+            toolsList.className = "possible-tools";
+
+            jsonResponse.tools.forEach(tool => {
+                const toolItem = document.createElement("li");
+                toolItem.innerHTML = `<div class="kind-indicator kind-${tool.kind.toLowerCase()}"></div>${tool.tool}`;
+                toolsList.appendChild(toolItem);
+            });
+
+            container.appendChild(toolsList);
+            return container;
+        }
+
+        async function setResult() {
+            const resultContainer = document.getElementById("result-container");
+            let jsonResponse = await fetchResult()
+            resultContainer.innerHTML = ""
+            resultContainer.appendChild(createResultElement("JA3-hash:", jsonResponse.ja3_hash));
+            resultContainer.appendChild(createResultElement("JA3-text:", jsonResponse.ja3_text));
+            resultContainer.appendChild(createResultElement("JA3N-hash:", jsonResponse.ja3n_hash));
+            resultContainer.appendChild(createResultElement("JA3N-text:", jsonResponse.ja3n_text));
+            resultContainer.appendChild(createResultElement("User-Agent:", jsonResponse.user_agent));
+
+            if (jsonResponse.tools && jsonResponse.tools.length > 0) {
+                resultContainer.appendChild(createPossibleToolsContainer(jsonResponse, "Possible Tools:")); }
+            else {
+                resultContainer.appendChild(createResultElement("This tool is not known yet.", ""));
+            }
+        }
+
+        async function refreshResult() {
+            let container = document.getElementById("result-container");
+            await setResult()
+        }
+
+        async function fetchResult() {
+            try {
+                let response = await fetch('{% url 'api-v1-analyze-all' %}', {
+                    headers: {
+                        'Connection': 'close',
+                        'Cache-Control': 'no-cache',
+                    }
+                });
+                return await response.json();
+            } catch (error) {
+                return {"error": error.toString()};
+            }
+        }
+
+        window.onload = setResult;
+    </script>
+
+</body>
+
+</html>

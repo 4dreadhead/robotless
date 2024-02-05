@@ -1,8 +1,7 @@
 httpagentparser
-fastapi
 mitmproxy
 python-dotenv
-peewee
 honcho
 uvicorn
 psycopg2
+django
