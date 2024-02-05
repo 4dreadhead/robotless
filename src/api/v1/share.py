@@ -64,7 +64,7 @@ class APIShareView(APIView):
                     "JA3-type": Fingerprint.Kind(fp.kind).name,
                     "JA3-hash": fp.hash,
                     "JA3-text": fp.value,
-                    "Tool": parsed_tool.as_str,
+                    "Tool": str(parsed_tool),
                     "User-Agent": ua_row
                 },
                 status=status.HTTP_200_OK
