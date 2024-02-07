@@ -20,35 +20,42 @@ class APIShareView(APIView):
         version = ua["browser"].get("version") if name else None
 
         if not (pf_name in self.PLATFORMS and name in self.BROWSERS):
-            return JsonResponse({"User-Agent": ua_row, "message": "can't recognise"}, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse(
+                { "User-Agent": ua_row, "message": "can't recognise" },
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         client_hello = request.headers.get("X-Client-Hello")
 
         if not client_hello:
-            return JsonResponse({"User-Agent": ua_row, "message": "can't collect"}, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse(
+                { "User-Agent": ua_row, "message": "empty client-hello" },
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         try:
             ja3_full = TLSParser(base64.b64decode(client_hello)).as_json()
         except ValueError:
-            return JsonResponse({"User-Agent": ua_row, "message": "can't collect"}, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse(
+                {"User-Agent": ua_row, "message": "can't collect ja3"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         if re.search(r'bot', name, re.I):
-            tool_kind = Tool.Kind.SEARCH_BOT.value
-            fp_kind = Fingerprint.Kind.JA3.value
-            ja3_hash = ja3_full["ja3_hash"]
-            ja3_text = ja3_full["ja3_text"]
+            tool_kind = Tool.Kind.SEARCH_BOT
+            fp_kind   = Fingerprint.Kind.JA3
+            ja3_hash  = ja3_full["ja3_hash"]
+            ja3_text  = ja3_full["ja3_text"]
         else:
-            tool_kind = Tool.Kind.BROWSER.value
-            fp_kind = Fingerprint.Kind.JA3N.value
-            ja3_hash = ja3_full["ja3n_hash"]
-            ja3_text = ja3_full["ja3n_text"]
+            tool_kind = Tool.Kind.BROWSER
+            fp_kind   = Fingerprint.Kind.JA3N
+            ja3_hash  = ja3_full["ja3n_hash"]
+            ja3_text  = ja3_full["ja3n_text"]
 
         fp, fp_created = Fingerprint.objects.get_or_create(
             hash=ja3_hash,
             kind=fp_kind,
-            defaults={
-                "value": ja3_text
-            }
+            defaults={"value": ja3_text}
         )
         parsed_tool, tool_created = Tool.objects.get_or_create(
             name=name,
@@ -70,13 +77,14 @@ class APIShareView(APIView):
                 status=status.HTTP_200_OK
             )
         else:
-            return JsonResponse({"User-Agent": ua_row, "message": "already exists"}, status=status.HTTP_200_OK)
-
+            return JsonResponse(
+                {"User-Agent": ua_row, "message": "already exists"},
+                status=status.HTTP_200_OK
+            )
 
     PLATFORMS = ['Android', 'PlayStation', 'Nokia S40',
                  'Symbian', 'Mac OS', 'BlackBerry',
                  'Linux', ' ChromeOS', 'Windows', 'iOS']
-
 
     BROWSERS = ['AndroidBrowser', 'ArchiveDotOrgBot', 'BaiduBot',
                 'BingBot', 'Browser', 'BrowserNG', 'Chrome',

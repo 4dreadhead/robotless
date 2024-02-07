@@ -1,21 +1,32 @@
 import hashlib
 import time
 import json
-from src.utils.bytes_to_integer import BytesToInteger
 
 
 class TLSParser:
-    TIMESTAMP_KEY = "timestamp"
+    class BytesToInteger(bytes):
+        def __getitem__(self, key):
+            result = super().__getitem__(key)
+            return self.__class__(result) if isinstance(key, slice) else result
+
+        @property
+        def to_i(self):
+            return int.from_bytes(self, byteorder="big")
+
+        def take(self, count):
+            return self[:count].to_i, self[count:]
+
     GREASE_TABLE = {
         0x0a0a: True, 0x1a1a: True, 0x2a2a: True, 0x3a3a: True,
         0x4a4a: True, 0x5a5a: True, 0x6a6a: True, 0x7a7a: True,
         0x8a8a: True, 0x9a9a: True, 0xaaaa: True, 0xbaba: True,
         0xcaca: True, 0xdada: True, 0xeaea: True, 0xfafa: True
     }
+    TIMESTAMP_KEY = "timestamp"
 
     def __init__(self, bytes_raw):
         self.bytes_raw_original = bytes_raw
-        self.bytes_raw = BytesToInteger(bytes_raw)
+        self.bytes_raw = self.BytesToInteger(bytes_raw)
         self.cached = None
 
     def as_json(self):

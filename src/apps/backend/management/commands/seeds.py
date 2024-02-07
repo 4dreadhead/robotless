@@ -14,14 +14,14 @@ class Command(BaseCommand):
         for res in results:
             fp, _ = Fingerprint.objects.get_or_create(
                 hash=res["fp"]["ja3_hash"],
-                kind=Fingerprint.Kind.JA3.value,
+                kind=Fingerprint.Kind.JA3,
                 defaults={
                     "value": res["fp"]["ja3_text"]
                 }
             )
             fpn, _ = Fingerprint.objects.get_or_create(
                 hash=res["fp"]["ja3n_hash"],
-                kind=Fingerprint.Kind.JA3N.value,
+                kind=Fingerprint.Kind.JA3N,
                 defaults={
                     "value": res["fp"]["ja3n_text"]
                 }
@@ -30,7 +30,7 @@ class Command(BaseCommand):
                 system=res["system"].split("/")[-1],
                 name=res["tool_name"],
                 version=res["tool_version"],
-                kind=Tool.Kind.HTTP_CLIENT.value
+                kind=Tool.Kind.HTTP_CLIENT
             )
             parsed_tool.fingerprints.add(fp, fpn)
 
