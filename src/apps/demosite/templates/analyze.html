@@ -22,11 +22,11 @@
             function createResultElement(label, value) {
                 const element = document.createElement("div");
                 element.className = "value";
-                element.innerHTML = `<span class="label">${label}:</span><span class="description scrollable">${value}</span>`;
+                element.innerHTML = `<span class="label">${label}:</span>${value === null ? '' : `<span class="description scrollable">${value}`}</span>`;
                 return element;
             }
             function createPossibleToolsContainer(tools, label) {
-                const container = createResultElement(label, "");
+                const container = createResultElement(label, null);
                 const toolsList = document.createElement("ul");
                 toolsList.className = "possible-tools";
                 tools.forEach(tool => {
