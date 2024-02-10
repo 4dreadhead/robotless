@@ -91,6 +91,7 @@ body {
 ul {
     list-style-type: none;
     padding: 0;
+    margin-bottom: 5px;
 }
 li {
     padding: 3px 0 3px 0;
