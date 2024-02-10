@@ -28,10 +28,10 @@
             function createPossibleToolsContainer(tools, label) {
                 const container = createResultElement(label, null);
                 const toolsList = document.createElement("ul");
-                toolsList.className = "possible-tools";
+                toolsList.className = "description scrollable";
                 tools.forEach(tool => {
                     const toolItem = document.createElement("li");
-                    toolItem.innerHTML = `<div class="kind-indicator kind-${tool.kind.toLowerCase()}"></div>${tool.tool}`;
+                    toolItem.innerHTML = `<div class="kind-indicator kind-${tool.kind.toLowerCase()}"></div><span>${tool.tool}</span>`;
                     toolsList.appendChild(toolItem);
                 });
 
