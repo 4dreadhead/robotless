@@ -16,14 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from src.api.v1 import APIShareView, APIAnalyzeView
-from src.apps.backend import views
+from src.apps.demosite import views as demosite_views
+from src.apps.backend import views as backend_views
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/share/all', APIShareView.as_view(), name='api-v1-share-all'),
-    path('api/v1/analyze/all', APIAnalyzeView.as_view(), name='api-v1-analyze-all'),
-    path('share', views.share, name='share'),
-    path('analyze', views.analyze, name='analyze')
+    path('backend/v1/share', backend_views.share_data, name='backend.v1.share'),
+    path('backend/v1/analyze', backend_views.tls_info, name='backend.v1.analyze'),
+    path('share', demosite_views.share, name='share'),
+    path('analyze', demosite_views.analyze, name='analyze')
 ]

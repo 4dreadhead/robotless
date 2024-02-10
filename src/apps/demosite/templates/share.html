@@ -1,0 +1,59 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Collect fingerprint</title>
+        <link rel="stylesheet" href="{% static 'css/demosite/styles.css' %}">
+    </head>
+    <body>
+        <div class="header">
+            <span>Collect fingerprint</span>
+            <div class="header-links">
+                <a href="/share" class="current-page">Share</a>
+                <a href="/analyze">Analyze</a>
+            </div>
+        </div>
+        <div class="result" id="result-container"></div>
+        <button type="button" id="refresh" onclick="refreshResult()">Refresh result</button>
+        <script>
+            function createResultElement(label, value) {
+                const element = document.createElement("div");
+                element.className = "value"
+                element.innerHTML = `<span class="label">${label}:</span><span class="description">${value}</span>`;
+                return element;
+            }
+            function setResult(jsonResponse) {
+                let elements = jsonResponse.success ? jsonResponse.data : jsonResponse.error
+                const resultContainer = document.getElementById("result-container");
+                for (const key in elements) {
+                    const value = elements[key];
+                    const element = createResultElement(key, value);
+                    resultContainer.appendChild(element);
+                }
+            }
+            async function refreshResult() {
+                let container = document.getElementById("result-container");
+                let jsonResponse = await fetchResult();
+                container.innerHTML = "";
+                setResult(jsonResponse);
+            }
+            async function fetchResult() {
+                try {
+                    let response = await fetch( "{% url 'backend.v1.share' %}",{
+                        headers: {
+                            'Connection': 'close',
+                            'Cache-Control': 'no-cache',
+                        }
+                    });
+                    return await response.json();
+                } catch (error) {
+                    return {"error": {"message": error.toString()}};
+                }
+            }
+            window.onload = refreshResult;
+        </script>
+    </body>
+</html>

@@ -29,11 +29,11 @@ class TLSParser:
         self.bytes_raw = self.BytesToInteger(bytes_raw)
         self.cached = None
 
-    def as_json(self):
+    def as_dict(self):
         return self.cached if self.cached else self.collect_info().cached
 
-    def as_str(self):
-        return json.dumps(self.as_json())
+    def as_json(self):
+        return json.dumps(self.as_dict())
 
     def collect_info(self):
         parsed_client_hello = self.parse_client_hello()

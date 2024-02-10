@@ -1,0 +1,83 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Analyse result</title>
+        <link rel="stylesheet" href="{% static 'css/demosite/styles.css' %}">
+    </head>
+    <body>
+        <div class="header">
+            <span>Analyze fingerprint</span>
+            <div class="header-links">
+                <a href="/share">Share</a>
+                <a href="/analyze" class="current-page">Analyze</a>
+            </div>
+        </div>
+        <div class="result" id="result-container"></div>
+        <button type="button" id="refresh" onclick="refreshResult()">Refresh result</button>
+        <script>
+            function createResultElement(label, value) {
+                const element = document.createElement("div");
+                element.className = "value";
+                element.innerHTML = `<span class="label">${label}:</span><span class="description scrollable">${value}</span>`;
+                return element;
+            }
+            function createPossibleToolsContainer(tools, label) {
+                const container = createResultElement(label, "");
+                const toolsList = document.createElement("ul");
+                toolsList.className = "possible-tools";
+                tools.forEach(tool => {
+                    const toolItem = document.createElement("li");
+                    toolItem.innerHTML = `<div class="kind-indicator kind-${tool.kind.toLowerCase()}"></div>${tool.tool}`;
+                    toolsList.appendChild(toolItem);
+                });
+
+                container.appendChild(toolsList);
+                return container;
+            }
+            async function setResult() {
+                const resultContainer = document.getElementById("result-container");
+                let jsonResponse = await fetchResult();
+                let tools = null;
+                resultContainer.innerHTML = "";
+                if (jsonResponse.success) {
+                    if (jsonResponse.data.tools && jsonResponse.data.tools.length > 0) {
+                        let tools_obj = jsonResponse.data.tools
+                        delete jsonResponse.data.tools
+                        tools = createPossibleToolsContainer(tools_obj, "tools");
+                    } else {
+                        tools = createResultElement("This tool is not known yet.", "");
+                    }
+                }
+                let items = jsonResponse.success ? jsonResponse.data : jsonResponse.error;
+
+                for (const key in items) {
+                    let value = items[key]
+                    resultContainer.appendChild(createResultElement(key, value));
+                }
+                if (tools) { resultContainer.appendChild(tools) };
+            }
+            async function refreshResult() {
+                let container = document.getElementById("result-container");
+                await setResult()
+            }
+            async function fetchResult() {
+                try {
+                    let response = await fetch("{% url 'backend.v1.analyze' %}",{
+                        headers: {
+                            'Connection': 'close',
+                            'Cache-Control': 'no-cache',
+                        }
+                    });
+                    return await response.json();
+                } catch (error) {
+                    return {"error": {"message": error.toString()}};
+                }
+            }
+            window.onload = setResult;
+        </script>
+    </body>
+</html>
