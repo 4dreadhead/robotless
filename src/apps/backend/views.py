@@ -92,9 +92,9 @@ def generate_token(request):
 
         if automation["cdp_detected"]:
             automation_score = Fingerprint.State.UNTRUSTED
-            client_info["CDP"] = True
+            client_info["cdp_open"] = True
         else:
-            client_info["CDP"] = False
+            client_info["cdp_open"] = False
 
         if any(map(lambda x: automation[x], common.AUTOMATION_KEYS)):
             client_info["autotools"] = True
