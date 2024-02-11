@@ -9,3 +9,4 @@ django-more-admin-filters
 django-admin-search-filter
 django-admin-rangefilter
 django-rest-framework
+pyjwt
