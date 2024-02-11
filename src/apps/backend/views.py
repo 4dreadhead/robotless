@@ -116,14 +116,8 @@ def generate_token(request):
         case _:
             client_info["conclusion"] = Fingerprint.State.BLACKLISTED.name
 
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR', "hidden")
-
     client_info["session_id"] = request.session.session_key
-    client_info["client_ip"] = ip
+    client_info["client_ip"] = request.headers.get("X-Client-IPARDDR") or "hidden"
     client_info["timestamp"] = int(datetime.datetime.now().timestamp() * 1000)
 
     return common.success(token=jwt.encode(client_info, settings.SECRET_KEY, algorithm='HS256'))
