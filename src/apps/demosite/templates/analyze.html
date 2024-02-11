@@ -7,6 +7,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Analyse result</title>
         <link rel="stylesheet" href="{% static 'css/demosite/styles.css' %}">
+        <script type="text/javascript">let serverConfing = {}</script>
+        <script src="{% static 'js/backend/collector.js' %}"></script>
+        <script src="{% static 'js/backend/crypto.js' %}"></script>
     </head>
     <body>
         <div class="header">
@@ -22,7 +25,7 @@
             function createResultElement(label, value) {
                 const element = document.createElement("div");
                 element.className = "value";
-                element.innerHTML = `<span class="label">${label}:</span>${value === null ? '' : `<span class="description scrollable">${value}`}</span>`;
+                element.innerHTML = `<span class="label" id="label">${label}:</span>${value === null ? '' : `<span class="description scrollable">${value}`}</span>`;
                 return element;
             }
             function createPossibleToolsContainer(tools, label) {
@@ -49,16 +52,17 @@
                         delete jsonResponse.data.tools
                         tools = createPossibleToolsContainer(tools_obj, "tools");
                     } else {
-                        tools = createResultElement("This tool is not known yet.", "");
+                        tools = null;
                     }
                 }
+                if (tools) { resultContainer.appendChild(tools); }
                 let items = jsonResponse.success ? jsonResponse.data : jsonResponse.error;
 
                 for (const key in items) {
                     let value = items[key]
                     resultContainer.appendChild(createResultElement(key, value));
                 }
-                if (tools) { resultContainer.appendChild(tools) };
+                window.dispatchEvent(new Event('analyzeWebgl'));
             }
             async function refreshResult() {
                 let container = document.getElementById("result-container");
@@ -78,6 +82,11 @@
                 }
             }
             window.onload = setResult;
+            window.addEventListener('webglAnalyzed', function(event) {
+                const resultContainer = document.getElementById("result-container");
+                resultContainer.appendChild(createResultElement("webgl_hash", event.fingerprintHash))
+                resultContainer.appendChild(createResultElement("webgl_info", event.fingerprint))
+            });
         </script>
     </body>
 </html>

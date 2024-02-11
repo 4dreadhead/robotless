@@ -22,7 +22,6 @@ class TLSParser:
         0x8a8a: True, 0x9a9a: True, 0xaaaa: True, 0xbaba: True,
         0xcaca: True, 0xdada: True, 0xeaea: True, 0xfafa: True
     }
-    TIMESTAMP_KEY = "timestamp"
 
     def __init__(self, bytes_raw):
         self.bytes_raw_original = bytes_raw
@@ -44,8 +43,7 @@ class TLSParser:
             "ja3_hash": hashlib.md5(ja3.encode()).hexdigest(),
             "ja3_text": ja3,
             "ja3n_hash": hashlib.md5(ja3_normalized.encode()).hexdigest(),
-            "ja3n_text": ja3_normalized,
-            self.TIMESTAMP_KEY: int(time.time())
+            "ja3n_text": ja3_normalized
         }
 
         return self

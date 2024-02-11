@@ -7,6 +7,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Collect fingerprint</title>
         <link rel="stylesheet" href="{% static 'css/demosite/styles.css' %}">
+        <script src="{% static 'js/backend/collector.js' %}"></script>
+        <script src="{% static 'js/backend/crypto.js' %}"></script>
     </head>
     <body>
         <div class="header">
@@ -14,12 +16,13 @@
             <div class="header-links">
                 <a href="/share" class="current-page">Share</a>
                 <a href="/analyze">Analyze</a>
+                <script type="text/javascript">let serverConfing = {{ server_config|safe }}</script>
             </div>
         </div>
         <div class="result" id="result-container"></div>
         <button type="button" id="refresh" onclick="refreshResult()">Refresh result</button>
         <script>
-            function createResultElement(label, value) {
+            window.createResultElement = function(label, value) {
                 const element = document.createElement("div");
                 element.className = "value"
                 element.innerHTML = `<span class="label">${label}:</span><span class="description">${value}</span>`;
@@ -30,7 +33,7 @@
                 const resultContainer = document.getElementById("result-container");
                 for (const key in elements) {
                     const value = elements[key];
-                    const element = createResultElement(key, value);
+                    const element = window.createResultElement(key, value);
                     resultContainer.appendChild(element);
                 }
             }
