@@ -1,25 +1,24 @@
-let webglAnalyzer = function() {
-    const PROPS = ['VERSION', 'SHADING_LANGUAGE_VERSION', 'VENDOR', 'RENDERER', 'MAX_VERTEX_ATTRIBS',
-                   'MAX_VERTEX_UNIFORM_VECTORS', 'MAX_VERTEX_TEXTURE_IMAGE_UNITS', 'MAX_VARYING_VECTORS',
-                   'MAX_VERTEX_UNIFORM_COMPONENTS', 'MAX_VERTEX_UNIFORM_BLOCKS', 'MAX_VERTEX_OUTPUT_COMPONENTS',
-                   'MAX_VARYING_COMPONENTS', 'MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS',
-                   'MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS', 'MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS',
-                   'ALIASED_LINE_WIDTH_RANGE', 'ALIASED_POINT_SIZE_RANGE', 'MAX_FRAGMENT_UNIFORM_VECTORS',
-                   'MAX_TEXTURE_IMAGE_UNITS', 'MAX_FRAGMENT_UNIFORM_COMPONENTS', 'MAX_FRAGMENT_UNIFORM_BLOCKS',
-                   'MAX_FRAGMENT_INPUT_COMPONENTS', 'MIN_PROGRAM_TEXEL_OFFSET', 'MAX_PROGRAM_TEXEL_OFFSET',
-                   'MAX_DRAW_BUFFERS', 'MAX_COLOR_ATTACHMENTS', 'MAX_SAMPLES', 'MAX_RENDERBUFFER_SIZE',
-                   'MAX_VIEWPORT_DIMS', 'RED_BITS', 'GREEN_BITS', 'BLUE_BITS', 'ALPHA_BITS', 'DEPTH_BITS',
-                   'STENCIL_BITS', 'MAX_TEXTURE_SIZE', 'MAX_CUBE_MAP_TEXTURE_SIZE',
-                   'MAX_COMBINED_TEXTURE_IMAGE_UNITS', 'MAX_3D_TEXTURE_SIZE', 'MAX_ARRAY_TEXTURE_LAYERS',
-                   'MAX_TEXTURE_LOD_BIAS', 'MAX_UNIFORM_BUFFER_BINDINGS', 'MAX_UNIFORM_BLOCK_SIZE',
-                   'UNIFORM_BUFFER_OFFSET_ALIGNMENT', 'MAX_COMBINED_UNIFORM_BLOCKS',
-                   'MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS', 'MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS']
+const PROPS = ['VERSION', 'SHADING_LANGUAGE_VERSION', 'VENDOR', 'RENDERER', 'MAX_VERTEX_ATTRIBS',
+               'MAX_VERTEX_UNIFORM_VECTORS', 'MAX_VERTEX_TEXTURE_IMAGE_UNITS', 'MAX_VARYING_VECTORS',
+               'MAX_VERTEX_UNIFORM_COMPONENTS', 'MAX_VERTEX_UNIFORM_BLOCKS', 'MAX_VERTEX_OUTPUT_COMPONENTS',
+               'MAX_VARYING_COMPONENTS', 'MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS',
+               'MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS', 'MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS',
+               'ALIASED_LINE_WIDTH_RANGE', 'ALIASED_POINT_SIZE_RANGE', 'MAX_FRAGMENT_UNIFORM_VECTORS',
+               'MAX_TEXTURE_IMAGE_UNITS', 'MAX_FRAGMENT_UNIFORM_COMPONENTS', 'MAX_FRAGMENT_UNIFORM_BLOCKS',
+               'MAX_FRAGMENT_INPUT_COMPONENTS', 'MIN_PROGRAM_TEXEL_OFFSET', 'MAX_PROGRAM_TEXEL_OFFSET',
+               'MAX_DRAW_BUFFERS', 'MAX_COLOR_ATTACHMENTS', 'MAX_SAMPLES', 'MAX_RENDERBUFFER_SIZE',
+               'MAX_VIEWPORT_DIMS', 'RED_BITS', 'GREEN_BITS', 'BLUE_BITS', 'ALPHA_BITS', 'DEPTH_BITS',
+               'STENCIL_BITS', 'MAX_TEXTURE_SIZE', 'MAX_CUBE_MAP_TEXTURE_SIZE',
+               'MAX_COMBINED_TEXTURE_IMAGE_UNITS', 'MAX_3D_TEXTURE_SIZE', 'MAX_ARRAY_TEXTURE_LAYERS',
+               'MAX_TEXTURE_LOD_BIAS', 'MAX_UNIFORM_BUFFER_BINDINGS', 'MAX_UNIFORM_BLOCK_SIZE',
+               'UNIFORM_BUFFER_OFFSET_ALIGNMENT', 'MAX_COMBINED_UNIFORM_BLOCKS',
+               'MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS', 'MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS']
+function webglAnalyzer() {
     let canvas, context, contextAttributes, shaderPrecision,
         supportedContexts = [
             "webgl2", "experimental-webgl2", "webgl", "experimental-webgl", "moz-webgl", "webkit-3d", "webgl2-compute"
         ], contextData = {}, supportedContextsList = [], hasWebGL1 = false,
         hasWebGL2 = false, isWebGL1Used = false, isWebGL2Used = false;
-
     for (let index in supportedContexts) {
         let contextType = supportedContexts[index];
         let debugExt;
@@ -81,17 +80,17 @@ let webglAnalyzer = function() {
         }(supportedContexts[index]);
         if (contextInfo) { supportedContextsList.push(supportedContexts[index]); }
     }
-    function getShaderInfo(context, shaderType) {
-        let highFloatPrecision = context.getShaderPrecisionFormat(shaderType, context.HIGH_FLOAT);
-        let mediumFloatPrecision = context.getShaderPrecisionFormat(shaderType, context.MEDIUM_FLOAT);
-        return (context = highFloatPrecision.precision === 0 ? mediumFloatPrecision : highFloatPrecision) ?
-            "[-2^" + context.rangeMin + ",2^" + context.rangeMax + "](" + context.precision + ")" :
-            undefined;
-    }
     let successEvent = new Event('webglAnalyzed');
     successEvent.fingerprint = JSON.stringify(contextData);
     successEvent.fingerprintHash = window.CryptoJS.SHA256(successEvent.fingerprint).toString();
     window.dispatchEvent(successEvent);
-};
+}
+function getShaderInfo(context, shaderType) {
+    let highFloatPrecision = context.getShaderPrecisionFormat(shaderType, context.HIGH_FLOAT);
+    let mediumFloatPrecision = context.getShaderPrecisionFormat(shaderType, context.MEDIUM_FLOAT);
+    return (context = highFloatPrecision.precision === 0 ? mediumFloatPrecision : highFloatPrecision) ?
+        "[-2^" + context.rangeMin + ",2^" + context.rangeMax + "](" + context.precision + ")" :
+        undefined;
+}
 
 window.addEventListener('analyzeWebgl', function () { webglAnalyzer(); });

@@ -10,9 +10,15 @@ class Fingerprint(models.Model):
         CANVAS = 4
         WEBGL  = 5
 
+    class State(models.IntegerChoices):
+        TRUSTED     = 0
+        UNTRUSTED   = 3
+        BLACKLISTED = 9
+
     hash       = models.CharField(unique=True, max_length=64)
-    value      = models.CharField(max_length=512)
+    value      = models.CharField(max_length=512, null=True)
     kind       = models.IntegerField(choices=Kind.choices)
+    state      = models.IntegerField(choices=State.choices, default=State.UNTRUSTED)
     tools      = models.ManyToManyField('Tool', related_name='fingerprints')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

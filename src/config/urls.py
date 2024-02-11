@@ -24,6 +24,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('backend/v1/share', backend_views.share_data, name='backend.v1.share'),
     path('backend/v1/analyze', backend_views.tls_info, name='backend.v1.analyze'),
+    path('backend/v1/initial', backend_views.initial, name='backend.v1.initial'),
+    path('backend/v1/token', backend_views.generate_token, name='backend.v1.token'),
+    path('backend/v1/info', backend_views.analyze_token, name='backend.v1.info'),
     path('share', demosite_views.share, name='share'),
     path('analyze', demosite_views.analyze, name='analyze')
 ]

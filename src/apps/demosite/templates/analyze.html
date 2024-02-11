@@ -10,6 +10,7 @@
         <script type="text/javascript">let serverConfing = {}</script>
         <script src="{% static 'js/backend/collector.js' %}"></script>
         <script src="{% static 'js/backend/crypto.js' %}"></script>
+        <script src="{% static 'js/backend/automation_tests.js' %}"></script>
     </head>
     <body>
         <div class="header">
@@ -20,7 +21,7 @@
             </div>
         </div>
         <div class="result" id="result-container"></div>
-        <button type="button" id="refresh" onclick="refreshResult()">Refresh result</button>
+        <button type="button" class="main-button" onclick="refreshResult()">Refresh result</button>
         <script>
             function createResultElement(label, value) {
                 const element = document.createElement("div");
@@ -63,6 +64,7 @@
                     resultContainer.appendChild(createResultElement(key, value));
                 }
                 window.dispatchEvent(new Event('analyzeWebgl'));
+                window.dispatchEvent(new Event('detectAutomations'))
             }
             async function refreshResult() {
                 let container = document.getElementById("result-container");
@@ -84,8 +86,12 @@
             window.onload = setResult;
             window.addEventListener('webglAnalyzed', function(event) {
                 const resultContainer = document.getElementById("result-container");
-                resultContainer.appendChild(createResultElement("webgl_hash", event.fingerprintHash))
-                resultContainer.appendChild(createResultElement("webgl_info", event.fingerprint))
+                resultContainer.appendChild(createResultElement("webgl_hash", event.fingerprintHash));
+                resultContainer.appendChild(createResultElement("webgl_info", event.fingerprint));
+            });
+            window.addEventListener('automationDetectionCompleted', function(event) {
+                const resultContainer = document.getElementById("result-container");
+                resultContainer.appendChild(createResultElement("automation", JSON.stringify(event.detections)));
             });
         </script>
     </body>

@@ -30,7 +30,7 @@ DEBUG = os.getenv("DEBUG_MODE")
 
 ALLOWED_HOSTS = [os.getenv("API_HOST"), "localhost", "127.0.0.1"]
 
-CSRF_TRUSTED_ORIGINS = [f'https://*.{os.getenv("API_HOST")}', 'https://*.127.0.0.1']
+CSRF_TRUSTED_ORIGINS = [f'https://*.{os.getenv("API_HOST")}', 'https://*.127.0.0.1:*', "https://localhost:3000" ]
 
 # Application definition
 
@@ -93,6 +93,15 @@ DATABASES = {
         "PORT": os.getenv("PG_PORT"),
     }
 }
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'robotless_cache',
+    }
+}
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

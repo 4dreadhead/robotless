@@ -1,6 +1,8 @@
 import base64
+import json
 import re
 import httpagentparser
+import hashlib
 from django.http import JsonResponse, HttpRequest
 from rest_framework import status
 from src.apps.backend.models import Fingerprint, Tool
@@ -89,6 +91,32 @@ def get_tools(tls_fp: dict) -> list[dict]:
          Fingerprint.objects.filter(hash=tls_fp["ja3n_hash"], kind=Fingerprint.Kind.JA3N).first()
 
     return [{"kind": Tool.Kind(item.kind).name, "tool": str(item)} for item in (fp.tools.all() if fp else [])]
+
+
+def get_or_create_tls_fp(tls_fp: dict) -> Fingerprint:
+    """
+    Get TLS fp or create if doesn't exist
+    :param tls_fp: generated tls fingerprint
+    :return: Fingerprint object
+    """
+    return Fingerprint.objects.filter(hash=tls_fp["ja3_hash"], kind=Fingerprint.Kind.JA3).first() or \
+           Fingerprint.objects.get_or_create(hash=tls_fp["ja3n_hash"], kind=Fingerprint.Kind.JA3N,
+                                             defaults={"value": tls_fp["ja3n_text"]})
+
+
+def get_or_create_webgl_fp(webgl_hash: str, webgl_raw: str) -> Fingerprint:
+    """
+    Get WEBGL fp or create if doesn't exist
+    :param webgl_hash: hash of webgl data
+    :param webgl_raw: raw webgl data
+    :return: Fingerprint object
+    """
+    webgl_fingerprint, _ = Fingerprint.objects.get_or_create(
+        hash=webgl_hash,
+        kind=Fingerprint.Kind.WEBGL,
+        defaults={"value": webgl_raw}
+    )
+    return webgl_fingerprint
 
 
 def get_ua_info(user_agent: str) -> list[[bool, str, None]]:
@@ -190,6 +218,56 @@ def _error_response(message: str, code: ErrorCodes, status_code: int) -> JsonRes
             "code": code,
         }
     }, status=status_code)
+
+
+def webgl_is_valid(webgl_hash: str, webgl_raw: str) -> bool:
+    """
+    Validate webgl
+    :param webgl_hash: sha256 hash of webgl
+    :param webgl_raw: base64 encoded webgl
+    :return: valid or not
+    """
+    if not (webgl_hash and webgl_raw):
+        return False
+
+    try:
+        webgl_raw_decoded_hash = hashlib.sha256(webgl_raw.encode("utf-8")).hexdigest()
+    except ValueError:
+        return False
+
+    if webgl_raw_decoded_hash != webgl_hash:
+        return False
+
+    try:
+        webgl_obj = json.loads(webgl_raw)
+    except json.JSONDecoder:
+        return False
+
+    if not webgl_obj:
+        return False
+
+    return True
+
+
+AUTOMATION_KEYS = ["webdriver_detected", "window_automations_detected",
+                   "document_automations_detected", "cdc_detected"]
+
+
+_WEBGL_KEYS = ['VERSION', 'SHADING_LANGUAGE_VERSION', 'VENDOR', 'RENDERER', 'MAX_VERTEX_ATTRIBS',
+               'MAX_VERTEX_UNIFORM_VECTORS', 'MAX_VERTEX_TEXTURE_IMAGE_UNITS', 'MAX_VARYING_VECTORS',
+               'MAX_VERTEX_UNIFORM_COMPONENTS', 'MAX_VERTEX_UNIFORM_BLOCKS', 'MAX_VERTEX_OUTPUT_COMPONENTS',
+               'MAX_VARYING_COMPONENTS', 'MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS',
+               'MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS', 'MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS',
+               'ALIASED_LINE_WIDTH_RANGE', 'ALIASED_POINT_SIZE_RANGE', 'MAX_FRAGMENT_UNIFORM_VECTORS',
+               'MAX_TEXTURE_IMAGE_UNITS', 'MAX_FRAGMENT_UNIFORM_COMPONENTS', 'MAX_FRAGMENT_UNIFORM_BLOCKS',
+               'MAX_FRAGMENT_INPUT_COMPONENTS', 'MIN_PROGRAM_TEXEL_OFFSET', 'MAX_PROGRAM_TEXEL_OFFSET',
+               'MAX_DRAW_BUFFERS', 'MAX_COLOR_ATTACHMENTS', 'MAX_SAMPLES', 'MAX_RENDERBUFFER_SIZE',
+               'MAX_VIEWPORT_DIMS', 'RED_BITS', 'GREEN_BITS', 'BLUE_BITS', 'ALPHA_BITS', 'DEPTH_BITS',
+               'STENCIL_BITS', 'MAX_TEXTURE_SIZE', 'MAX_CUBE_MAP_TEXTURE_SIZE',
+               'MAX_COMBINED_TEXTURE_IMAGE_UNITS', 'MAX_3D_TEXTURE_SIZE', 'MAX_ARRAY_TEXTURE_LAYERS',
+               'MAX_TEXTURE_LOD_BIAS', 'MAX_UNIFORM_BUFFER_BINDINGS', 'MAX_UNIFORM_BLOCK_SIZE',
+               'UNIFORM_BUFFER_OFFSET_ALIGNMENT', 'MAX_COMBINED_UNIFORM_BLOCKS',
+               'MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS', 'MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS']
 
 
 _PLATFORMS = ['Android', 'PlayStation', 'Nokia S40',
