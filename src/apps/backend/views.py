@@ -117,7 +117,7 @@ def generate_token(request):
             client_info["conclusion"] = Fingerprint.State.BLACKLISTED.name
 
     client_info["session_id"] = request.session.session_key
-    client_info["client_ip"] = request.headers.get("X-Real-IP") or "hidden"
+    client_info["client_ip"] = request.headers.get("X-Real-IPADDR") or request.headers.get("X-Real-IP") or "hidden"
     client_info["timestamp"] = int(datetime.datetime.now().timestamp() * 1000)
 
     return common.success(token=jwt.encode(client_info, settings.SECRET_KEY, algorithm='HS256'))
