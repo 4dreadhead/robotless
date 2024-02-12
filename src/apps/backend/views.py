@@ -124,6 +124,7 @@ def generate_token(request):
     return common.success(token=jwt.encode(client_info, settings.SECRET_KEY, algorithm='HS256'))
 
 
+@csrf_exempt
 def analyze_token(request):
     if request.method != 'POST':
         return common.server_error(ErrorCodes.NOT_FOUND)
