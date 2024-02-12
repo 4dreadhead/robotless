@@ -91,7 +91,7 @@
             });
             window.addEventListener('automationDetectionCompleted', function(event) {
                 const resultContainer = document.getElementById("result-container");
-                resultContainer.appendChild(createResultElement("automation", JSON.stringify(event.detections)));
+                resultContainer.appendChild(createResultElement("automation", JSON.stringify(event.automation)));
             });
         </script>
     </body>
