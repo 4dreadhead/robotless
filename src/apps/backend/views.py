@@ -3,6 +3,7 @@ import json
 
 import jwt
 from django.db.utils import OperationalError
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.conf import settings
 
 from src.apps.backend.models import Fingerprint
@@ -50,6 +51,7 @@ def initial(request):
     return common.success()
 
 
+@ensure_csrf_cookie
 def generate_token(request):
     if request.method != 'POST':
         return common.server_error(ErrorCodes.NOT_FOUND)
