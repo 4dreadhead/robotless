@@ -64,7 +64,8 @@ function getTokenRequest(webglHash, webglBase64, automation) {
             "webgl_hash": webglHash,
             "webgl_raw": webglBase64,
             "automation": automation
-        })
+        }),
+        credentials: 'include'
     }).
     then(response => response.json()).
     catch(error => new Object({"success": false, "error": {"message": error.toString()}}))
