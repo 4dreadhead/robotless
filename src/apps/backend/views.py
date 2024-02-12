@@ -111,7 +111,7 @@ def generate_token(request):
     client_info["score"] = final_score
 
     match final_score:
-        case 0, 3:
+        case 0 | 3:
             client_info["conclusion"] = Fingerprint.State.TRUSTED.name
         case 6:
             client_info["conclusion"] = Fingerprint.State.UNTRUSTED.name
