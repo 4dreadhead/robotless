@@ -1,0 +1,13 @@
+server {
+    ##
+    # Redirect on https protocol
+    # Need to configure server_name same as in nginx.conf robotless upstream
+    #
+    # example:
+    #
+    # server robotless.mybestsite.com:3000
+    ##
+    listen 80;
+    server_name localhost;
+    return 301 https://$server_name$request_uri;
+}

@@ -13,7 +13,7 @@ async def main():
         if response.status_code == 200:
             response_text = response.text
 
-            file_name = f"results/python_httpx-{python_version}.json"
+            file_name = f"collection/results/python_httpx-{python_version}.json"
 
             with open(file_name, 'w') as file:
                 file.write(response_text)

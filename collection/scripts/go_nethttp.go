@@ -26,7 +26,7 @@ func main() {
         return
     }
 
-    fileName := fmt.Sprintf("results/go_nethttp-%s.json", version)
+    fileName := fmt.Sprintf("collection/results/go_nethttp-%s.json", version)
 
     file, err := os.Create(fileName)
     if err != nil {

@@ -14,6 +14,6 @@ $response = $client->get($url);
 
 $body = $response->getBody()->getContents();
 
-$fileName = 'results/php_guzzle-' . $phpVersion . '.json';
+$fileName = 'collection/results/php_guzzle-' . $phpVersion . '.json';
 
 file_put_contents($fileName, $body);

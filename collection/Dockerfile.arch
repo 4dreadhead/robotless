@@ -1,6 +1,5 @@
 FROM archlinux:base-20231112.0.191179
 
-# Обновляем базу данных пакетов и устанавливаем базовые утилиты
 RUN pacman -Syu --noconfirm && pacman -S --noconfirm base-devel gdb lcov pkg-config \
     bzip2 libffi gdbm xz tk zlib git cmake make curl wget httpie
 
@@ -33,19 +32,13 @@ RUN source $HOME/.asdf/asdf.sh && \
 RUN pacman -S --noconfirm autoconf bison re2c pkg-config libxml2 sqlite libcurl-compat \
                    gd oniguruma libpqxx readline libzip
 
-#RUN source $HOME/.asdf/asdf.sh && \
-#    asdf plugin-add php && \
-#    asdf install php 8.2.12 && \
-#    asdf global php 8.2.12 && \
-#    composer global require guzzlehttp/guzzle
-
-# Устанавливаем Go
+# Go
 RUN source $HOME/.asdf/asdf.sh && \
     asdf plugin-add golang && \
     asdf install golang 1.21.4 && \
     asdf global golang 1.21.4
 
-# Устанавливаем Node.js версий
+# Node.js
 RUN source $HOME/.asdf/asdf.sh && \
     asdf plugin-add nodejs && \
     asdf install nodejs 18.18.2 && \

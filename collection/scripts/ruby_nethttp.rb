@@ -7,7 +7,7 @@ response = Net::HTTP.get_response(url)
 if response.is_a?(Net::HTTPSuccess)
   response_text = response.body
 
-  file_name = "results/ruby_nethttp-#{RUBY_VERSION}.json"
+  file_name = "collection/results/ruby_nethttp-#{RUBY_VERSION}.json"
 
   File.open(file_name, 'w') { |file| file.write(response_text) }
 else
