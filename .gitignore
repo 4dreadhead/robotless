@@ -4,3 +4,4 @@
 /*.crt
 /*.pem
 /*.key
+/src/staticfiles
