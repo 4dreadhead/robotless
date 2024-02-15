@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 from rangefilter.filters import DateRangeQuickSelectListFilterBuilder
 from more_admin_filters import ChoicesDropdownFilter, RelatedDropdownFilter
-from django_admin_search_filter import get_icontains_input_filter
+from django_admin_search_filter import get_exact_equals_input_filter
 from src.apps.backend.models import Fingerprint
 
 
@@ -23,8 +23,8 @@ class FingerprintAdmin(admin.ModelAdmin):
     list_filter = (
         ('kind', ChoicesDropdownFilter),
         ('tools', RelatedDropdownFilter),
-        get_icontains_input_filter(title_='hash', attrs='hash'),
-        get_icontains_input_filter(title_='value', attrs='value'),
+        get_exact_equals_input_filter(title_='hash', attrs='hash'),
+        get_exact_equals_input_filter(title_='value', attrs='value'),
         ('created_at', DateRangeQuickSelectListFilterBuilder()),
         ('updated_at', DateRangeQuickSelectListFilterBuilder()),
     )
