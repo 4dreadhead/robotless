@@ -19,6 +19,11 @@ from django.urls import path
 from src.apps.demosite import views as demosite_views
 from src.apps.backend import views as backend_views
 
+handler400 = lambda request, exception=None: demosite_views.error_handler(request, status=400)
+handler403 = lambda request, exception=None: demosite_views.error_handler(request, status=403)
+handler404 = lambda request, exception=None: demosite_views.error_handler(request, status=404)
+handler500 = lambda request, exception=None: demosite_views.error_handler(request, status=500)
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),

@@ -1,0 +1,30 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{ status_code }}</title>
+        <link rel="stylesheet" href="{% static 'css/demosite/styles.css' %}">
+        <style>
+            .result {
+                max-width: 300px;
+                overflow: unset;
+                text-align: center;
+                font-size: 16pt;
+                padding: 30px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <span>{{ status_code }}</span>
+            <div class="header-links">
+                <a href="/share">Share</a>
+                <a href="/analyze">Analyze</a>
+            </div>
+        </div>
+        <div class="result" id="result-container">{{ reason_phrase }}</div>
+    </body>
+</html>

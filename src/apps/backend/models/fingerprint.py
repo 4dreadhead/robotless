@@ -19,7 +19,7 @@ class Fingerprint(models.Model):
     value      = models.CharField(max_length=512, null=True, blank=True)
     kind       = models.IntegerField(choices=Kind.choices)
     state      = models.IntegerField(choices=State.choices, default=State.UNTRUSTED)
-    tools      = models.ManyToManyField('Tool', related_name='fingerprints', null=True, blank=True)
+    tools      = models.ManyToManyField('Tool', related_name='fingerprints', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
